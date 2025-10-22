@@ -1,26 +1,41 @@
 // import { eachDayOfInterval } from "date-fns";
+import { notFound } from "next/navigation";
 import { supabase } from "./supabaseClient";
-import { CabinPreview, cabinPreviewArraySchema } from "./validationSchemas";
+import {
+  CabinPreview,
+  cabinPreviewArraySchema,
+  FullCabinPreview,
+  fullCabinPreviewSchema,
+} from "./validationSchemas";
 
 /////////////
 // GET
 
-// export async function getCabin(id) {
-//   const { data, error } = await supabase
-//     .from("cabins")
-//     .select("*")
-//     .eq("id", id)
-//     .single();
+export async function getCabin(id: number): Promise<FullCabinPreview> {
+  const { data, error } = await supabase
+    .from("cabins")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-//   // For testing
-//   // await new Promise((res) => setTimeout(res, 1000));
+  // For testing
+  // await new Promise((res) => setTimeout(res, 1000));
 
-//   if (error) {
-//     console.error(error);
-//   }
+  if (error) {
+    console.error(error);
+    // ovo next function automatski poziva not-found.tsx page
+    notFound();
+  }
 
-//   return data;
-// }
+  const parsed = fullCabinPreviewSchema.safeParse(data);
+
+  if (!parsed.success) {
+    console.log("getCabin error: ", parsed.error);
+    throw new Error("Cabin could not be loaded");
+  }
+
+  return parsed.data;
+}
 
 // export async function getCabinPrice(id) {
 //   const { data, error } = await supabase

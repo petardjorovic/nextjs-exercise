@@ -12,3 +12,10 @@ export const cabinPreviewSchema = z.object({
 export const cabinPreviewArraySchema = z.array(cabinPreviewSchema);
 
 export type CabinPreview = z.infer<typeof cabinPreviewSchema>;
+
+export const fullCabinPreviewSchema = cabinPreviewSchema.extend({
+  description: z.string(),
+  created_at: z.string(),
+});
+
+export type FullCabinPreview = z.infer<typeof fullCabinPreviewSchema>;
