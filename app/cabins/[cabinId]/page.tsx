@@ -1,5 +1,13 @@
-import { getCabin } from "@/app/_lib/data-service";
+import { getCabin, getCabins } from "@/app/_lib/data-service";
 import Cabin from "@/app/_components/Cabin";
+
+export async function generateStaticParams() {
+  const cabins = await getCabins();
+
+  const ids = cabins.map((cabin) => ({ cabinId: String(cabin.id) }));
+
+  return ids;
+}
 
 type Props = {
   params: Promise<{ cabinId: string }>;

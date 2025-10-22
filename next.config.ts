@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // output: "export",   //* ovo je ako zelis da ceo projekat bude SSG
 };
 
 export default nextConfig;

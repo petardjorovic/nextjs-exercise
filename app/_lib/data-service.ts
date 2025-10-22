@@ -159,17 +159,23 @@ export const getCabins = async function (): Promise<CabinPreview[]> {
 //   return data;
 // }
 
-// export async function getCountries() {
-//   try {
-//     const res = await fetch(
-//       "https://restcountries.com/v2/all?fields=name,flag"
-//     );
-//     const countries = await res.json();
-//     return countries;
-//   } catch {
-//     throw new Error("Could not fetch countries");
-//   }
-// }
+type Country = {
+  name: string;
+  flag: string;
+  independent: boolean;
+};
+
+export async function getCountries(): Promise<Country[]> {
+  try {
+    const res = await fetch(
+      "https://restcountries.com/v2/all?fields=name,flag"
+    );
+    const countries = await res.json();
+    return countries;
+  } catch {
+    throw new Error("Could not fetch countries");
+  }
+}
 
 // /////////////
 // // CREATE
