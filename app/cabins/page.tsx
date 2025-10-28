@@ -1,16 +1,24 @@
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { Metadata } from "next";
 import CabinList from "@/app/_components/CabinList";
 import Spinner from "@/app/_components/Spinner";
+import { capacitySearchParamsSchema } from "../_lib/validationSchemas";
+import Filter from "../_components/Filter";
 
 export const metadata: Metadata = {
   title: "Cabins",
 };
 
-export const revalidate = 3600;
+export const revalidate = 3600; // obzirom da ovaj page prima searchParams automatski postaje dynamic page i ovo vise nema smisla
 // export const revalidate = 15;
 
-async function Cabins() {
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+function Page(props: { searchParams: SearchParams }) {
+  const searchParams = use(props.searchParams);
+  const result = capacitySearchParamsSchema.safeParse(searchParams);
+  const filter = result.success ? result.data.capacity ?? "all" : "all";
+
   return (
     <div>
       <h1 className="text-4xl mb-5 text-accent-400 font-medium">
@@ -25,11 +33,15 @@ async function Cabins() {
         Welcome to paradise.
       </p>
 
-      <Suspense fallback={<Spinner />}>
-        <CabinList />
+      <div className="flex mb-8 justify-end">
+        <Filter />
+      </div>
+
+      <Suspense fallback={<Spinner />} key={filter}>
+        <CabinList filter={filter} />
       </Suspense>
     </div>
   );
 }
 
-export default Cabins;
+export default Page;

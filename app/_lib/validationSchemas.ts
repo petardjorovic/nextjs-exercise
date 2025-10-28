@@ -1,5 +1,9 @@
 import z from "zod";
 
+export const capacitySearchParamsSchema = z.object({
+  capacity: z.enum(["small", "medium", "large", "all"]).optional(),
+});
+
 export const cabinPreviewSchema = z.object({
   id: z.number(),
   name: z.string(),
