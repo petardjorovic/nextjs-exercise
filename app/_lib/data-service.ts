@@ -1,11 +1,16 @@
-// import { eachDayOfInterval } from "date-fns";
+import { eachDayOfInterval } from "date-fns";
 import { notFound } from "next/navigation";
 import { supabase } from "./supabaseClient";
 import {
+  BookingPreviev,
+  bookingPreviewSchemaArray,
   CabinPreview,
   cabinPreviewArraySchema,
+  fullBookingPreviewSchemaArray,
   FullCabinPreview,
   fullCabinPreviewSchema,
+  SettingsPreview,
+  settingsPreviewSchema,
 } from "./validationSchemas";
 
 /////////////
@@ -19,7 +24,7 @@ export async function getCabin(id: number): Promise<FullCabinPreview> {
     .single();
 
   // For testing
-  // await new Promise((res) => setTimeout(res, 1000));
+  await new Promise((res) => setTimeout(res, 1000));
 
   if (error) {
     console.error(error);
@@ -100,64 +105,96 @@ export const getCabins = async function (): Promise<CabinPreview[]> {
 //   return data;
 // }
 
-// export async function getBookings(guestId) {
-//   const { data, error, count } = await supabase
-//     .from("bookings")
-//     // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
-//     .select(
-//       "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestId, cabinId, cabins(name, image)"
-//     )
-//     .eq("guestId", guestId)
-//     .order("startDate");
+export async function getBookings(guestId: number): Promise<BookingPreviev[]> {
+  const { data, error, count } = await supabase
+    .from("bookings")
+    // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
+    .select(
+      "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestId, cabinId, cabins(name, image)"
+    )
+    .eq("guestId", guestId)
+    .order("startDate");
 
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Bookings could not get loaded");
-//   }
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
+  }
 
-//   return data;
-// }
+  //* Zod validacija
+  const parsed = bookingPreviewSchemaArray.safeParse(data);
 
-// export async function getBookedDatesByCabinId(cabinId) {
-//   let today = new Date();
-//   today.setUTCHours(0, 0, 0, 0);
-//   today = today.toISOString();
+  if (!parsed.success) {
+    console.log("getBookings error: ", parsed.error);
+    throw new Error("Invalid bookings data from server");
+  }
 
-//   // Getting all bookings
-//   const { data, error } = await supabase
-//     .from("bookings")
-//     .select("*")
-//     .eq("cabinId", cabinId)
-//     .or(`startDate.gte.${today},status.eq.checked-in`);
+  return parsed.data;
+}
 
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Bookings could not get loaded");
-//   }
+export async function getBookedDatesByCabinId(
+  cabinId: number
+): Promise<Date[]> {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  // today = today.toISOString();
 
-//   // Converting to actual dates to be displayed in the date picker
-//   const bookedDates = data
-//     .map((booking) => {
-//       return eachDayOfInterval({
-//         start: new Date(booking.startDate),
-//         end: new Date(booking.endDate),
-//       });
-//     })
-//     .flat();
+  // Getting all bookings
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("*")
+    .eq("cabinId", cabinId)
+    .or(`startDate.gte.${today.toISOString()},status.eq.checked-in`);
 
-//   return bookedDates;
-// }
+  // For testing
+  // await new Promise((res) => setTimeout(res, 5000));
 
-// export async function getSettings() {
-//   const { data, error } = await supabase.from("settings").select("*").single();
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
+  }
 
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Settings could not be loaded");
-//   }
+  //* Zod validacija
+  const parsed = fullBookingPreviewSchemaArray.safeParse(data);
 
-//   return data;
-// }
+  if (!parsed.success) {
+    console.log("getBookedDatesByCabinId error: ", parsed.error);
+    throw new Error("Invalid BookedDatesByCabinId data from server");
+  }
+
+  // Converting to actual dates to be displayed in the date picker
+  const bookedDates = parsed.data
+    .map((booking) => {
+      return eachDayOfInterval({
+        start: new Date(booking.startDate),
+        end: new Date(booking.endDate),
+      });
+    })
+    .flat();
+
+  return bookedDates;
+}
+
+export async function getSettings(): Promise<SettingsPreview> {
+  const { data, error } = await supabase.from("settings").select("*").single();
+
+  // For testing
+  // await new Promise((res) => setTimeout(res, 2000));
+
+  if (error) {
+    console.error(error);
+    throw new Error("Settings could not be loaded");
+  }
+
+  //* Zod validacija
+  const parsed = settingsPreviewSchema.safeParse(data);
+
+  if (!parsed.success) {
+    console.log("getSettings error: ", parsed.error);
+    throw new Error("Invalid settings data from server");
+  }
+
+  return parsed.data;
+}
 
 type Country = {
   name: string;

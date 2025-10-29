@@ -1,5 +1,8 @@
+import { Suspense } from "react";
 import { getCabin, getCabins } from "@/app/_lib/data-service";
 import Cabin from "@/app/_components/Cabin";
+import Reservations from "@/app/_components/Reservations";
+import Spinner from "@/app/_components/Spinner";
 
 export async function generateStaticParams() {
   const cabins = await getCabins();
@@ -28,9 +31,13 @@ async function Page(props: PageProps<"/cabins/[cabinId]">) {
       <Cabin cabin={cabin} />
 
       <div>
-        <h2 className="text-5xl font-semibold text-center">
-          Reserve today. Pay on arrival.
+        <h2 className="text-5xl font-semibold text-center text-accent-400 mb-10">
+          Reserve {cabin.name} today. Pay on arrival.
         </h2>
+
+        <Suspense fallback={<Spinner />}>
+          <Reservations cabin={cabin} />
+        </Suspense>
       </div>
     </div>
   );
