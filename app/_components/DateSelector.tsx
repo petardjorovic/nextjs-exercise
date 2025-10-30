@@ -2,8 +2,9 @@
 
 import { isWithinInterval } from "date-fns";
 import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
 import { FullCabinPreview, SettingsPreview } from "../_lib/validationSchemas";
+import { useReservations } from "../_contexts/useReservatons";
+import "react-day-picker/dist/style.css";
 
 type Range = {
   from: string;
@@ -27,11 +28,11 @@ type DateSelectorProps = {
 };
 
 function DateSelector({ settings, bookedDates, cabin }: DateSelectorProps) {
+  const { range, setRange, resetRange } = useReservations();
   // CHANGE
   const { regularPrice, discount } = cabin;
   const numNights = 23;
   const cabinPrice = 23;
-  const range = { from: null, to: null };
 
   // SETTINGS
   const { minBookingLength, maxBookingLength } = settings;
@@ -39,13 +40,17 @@ function DateSelector({ settings, bookedDates, cabin }: DateSelectorProps) {
   return (
     <div className="col-span-3 flex flex-col justify-between">
       <DayPicker
-        className="pt-12 place-self-center"
+        className="pt-1 place-self-center"
         mode="range"
         min={minBookingLength + 1}
         max={maxBookingLength}
         startMonth={new Date()}
-        fromDate={new Date()}
-        toYear={new Date().getFullYear() + 5}
+        selected={range}
+        onSelect={setRange}
+        // fromDate={new Date()}
+        disabled={{ before: new Date() }}
+        // toYear={new Date().getFullYear() + 5}
+        endMonth={new Date(new Date().getFullYear() + 5, 12)}
         captionLayout="dropdown"
         numberOfMonths={2}
       />
@@ -78,10 +83,10 @@ function DateSelector({ settings, bookedDates, cabin }: DateSelectorProps) {
           ) : null}
         </div>
 
-        {range.from || range.to ? (
+        {range?.from || range?.to ? (
           <button
-            className="border border-primary-800 py-2 px-4 text-sm font-semibold"
-            // onClick={() => resetRange()}
+            className="border border-primary-800 py-2 px-4 text-sm font-semibold cursor-pointer"
+            onClick={resetRange}
           >
             Clear
           </button>

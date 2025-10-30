@@ -1,12 +1,16 @@
+"use client";
+
+import { useReservations } from "../_contexts/useReservatons";
 import { FullCabinPreview } from "../_lib/validationSchemas";
 
 function ReservationForm({ cabin }: { cabin: FullCabinPreview }) {
+  const { range } = useReservations();
   // CHANGE
   const { maxCapacity } = cabin;
 
   return (
     <div className="col-span-2 scale-[1.01]">
-      <div className="bg-primary-800 text-primary-300 px-16 py-2 flex justify-between items-center">
+      <div className="bg-primary-800 text-primary-300 px-10 py-2 flex justify-between items-center">
         <p>Logged in as</p>
 
         {/* <div className='flex gap-4 items-center'>
@@ -20,8 +24,12 @@ function ReservationForm({ cabin }: { cabin: FullCabinPreview }) {
           <p>{user.name}</p>
         </div> */}
       </div>
+      {/* <p>
+        From {range?.from ? String(range.from) : ""} to{" "}
+        {range?.to ? String(range.to) : ""}
+      </p> */}
 
-      <form className="bg-primary-900 py-10 px-16 text-lg flex gap-5 flex-col">
+      <form className="bg-primary-900 py-10 px-10 text-lg flex gap-5 flex-col">
         <div className="space-y-2">
           <label htmlFor="numGuests">How many guests?</label>
           <select
@@ -54,13 +62,15 @@ function ReservationForm({ cabin }: { cabin: FullCabinPreview }) {
         </div>
 
         <div className="flex justify-end items-center gap-6">
-          <p className="text-primary-300 text-base px-8 py-4">
-            Start by selecting dates
-          </p>
-
-          <button className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300">
-            Reserve now
-          </button>
+          {!(range?.from && range?.to) ? (
+            <p className="text-primary-300 text-base px-8 py-4">
+              Start by selecting dates
+            </p>
+          ) : (
+            <button className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300">
+              Reserve now
+            </button>
+          )}
         </div>
       </form>
     </div>

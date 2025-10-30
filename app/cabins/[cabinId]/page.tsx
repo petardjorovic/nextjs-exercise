@@ -3,6 +3,7 @@ import { getCabin, getCabins } from "@/app/_lib/data-service";
 import Cabin from "@/app/_components/Cabin";
 import Reservations from "@/app/_components/Reservations";
 import Spinner from "@/app/_components/Spinner";
+import ReservationReminder from "@/app/_components/ReservationReminder";
 
 export async function generateStaticParams() {
   const cabins = await getCabins();

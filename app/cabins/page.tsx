@@ -4,6 +4,7 @@ import CabinList from "@/app/_components/CabinList";
 import Spinner from "@/app/_components/Spinner";
 import { capacitySearchParamsSchema } from "../_lib/validationSchemas";
 import Filter from "../_components/Filter";
+import ReservationReminder from "../_components/ReservationReminder";
 
 export const metadata: Metadata = {
   title: "Cabins",
@@ -39,6 +40,7 @@ function Page(props: { searchParams: SearchParams }) {
 
       <Suspense fallback={<Spinner />} key={filter}>
         <CabinList filter={filter} />
+        <ReservationReminder />
       </Suspense>
     </div>
   );
