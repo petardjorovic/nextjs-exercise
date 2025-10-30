@@ -79,16 +79,17 @@ export const getCabins = async function (): Promise<CabinPreview[]> {
 };
 
 // Guests are uniquely identified by their email address
-// export async function getGuest(email) {
-//   const { data, error } = await supabase
-//     .from("guests")
-//     .select("*")
-//     .eq("email", email)
-//     .single();
+export async function getGuest(email: string) {
+  // const { data, error } = await supabase
+  const { data } = await supabase
+    .from("guests")
+    .select("*")
+    .eq("email", email)
+    .single();
 
-//   // No error here! We handle the possibility of no guest in the sign in callback
-//   return data;
-// }
+  // No error here! We handle the possibility of no guest in the sign in callback
+  return data;
+}
 
 // export async function getBooking(id) {
 //   const { data, error, count } = await supabase
@@ -106,7 +107,8 @@ export const getCabins = async function (): Promise<CabinPreview[]> {
 // }
 
 export async function getBookings(guestId: number): Promise<BookingPreviev[]> {
-  const { data, error, count } = await supabase
+  // const { data, error, count } = await supabase
+  const { data, error } = await supabase
     .from("bookings")
     // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
     .select(
@@ -214,19 +216,22 @@ export async function getCountries(): Promise<Country[]> {
   }
 }
 
-// /////////////
-// // CREATE
+/////////////
+// CREATE
 
-// export async function createGuest(newGuest) {
-//   const { data, error } = await supabase.from("guests").insert([newGuest]);
+export async function createGuest(newGuest: {
+  email: string;
+  fullName: string;
+}) {
+  const { data, error } = await supabase.from("guests").insert([newGuest]);
 
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Guest could not be created");
-//   }
+  if (error) {
+    console.error(error);
+    throw new Error("Guest could not be created");
+  }
 
-//   return data;
-// }
+  return data;
+}
 
 // export async function createBooking(newBooking) {
 //   const { data, error } = await supabase

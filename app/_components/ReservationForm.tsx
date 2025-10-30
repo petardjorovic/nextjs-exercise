@@ -3,7 +3,16 @@
 import { useReservations } from "../_contexts/useReservatons";
 import { FullCabinPreview } from "../_lib/validationSchemas";
 
-function ReservationForm({ cabin }: { cabin: FullCabinPreview }) {
+type ReservationFormProps = {
+  cabin: FullCabinPreview;
+  user: {
+    name?: string | null | undefined;
+    email?: string | null | undefined;
+    image?: string | null | undefined;
+  };
+};
+
+function ReservationForm({ cabin, user }: ReservationFormProps) {
   const { range } = useReservations();
   // CHANGE
   const { maxCapacity } = cabin;
@@ -13,21 +22,19 @@ function ReservationForm({ cabin }: { cabin: FullCabinPreview }) {
       <div className="bg-primary-800 text-primary-300 px-10 py-2 flex justify-between items-center">
         <p>Logged in as</p>
 
-        {/* <div className='flex gap-4 items-center'>
-          <img
-            // Important to display google profile images
-            referrerPolicy='no-referrer'
-            className='h-8 rounded-full'
-            src={user.image}
-            alt={user.name}
-          />
+        <div className="flex gap-4 items-center">
+          {user.name && user.image && (
+            <img
+              // Important to display google profile images
+              referrerPolicy="no-referrer"
+              className="h-8 rounded-full"
+              src={user.image}
+              alt={user.name}
+            />
+          )}
           <p>{user.name}</p>
-        </div> */}
+        </div>
       </div>
-      {/* <p>
-        From {range?.from ? String(range.from) : ""} to{" "}
-        {range?.to ? String(range.to) : ""}
-      </p> */}
 
       <form className="bg-primary-900 py-10 px-10 text-lg flex gap-5 flex-col">
         <div className="space-y-2">
