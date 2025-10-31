@@ -6,6 +6,8 @@ import {
   bookingPreviewSchemaArray,
   CabinPreview,
   cabinPreviewArraySchema,
+  fullBookingPreview,
+  fullBookingPreviewSchema,
   fullBookingPreviewSchemaArray,
   FullCabinPreview,
   fullCabinPreviewSchema,
@@ -91,20 +93,29 @@ export async function getGuest(email: string) {
   return data;
 }
 
-// export async function getBooking(id) {
-//   const { data, error, count } = await supabase
-//     .from("bookings")
-//     .select("*")
-//     .eq("id", id)
-//     .single();
+export async function getBooking(id: number): Promise<fullBookingPreview> {
+  // const { data, error, count } = await supabase
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("*, cabins(name, maxCapacity)")
+    .eq("id", id)
+    .single();
 
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Booking could not get loaded");
-//   }
+  if (error) {
+    console.error(error);
+    throw new Error("Booking could not get loaded");
+  }
 
-//   return data;
-// }
+  //* Zod validacija
+  const parsed = fullBookingPreviewSchema.safeParse(data);
+
+  if (!parsed.success) {
+    console.error("getBooking error: ", parsed.error);
+    throw new Error("Invalid booking data from server");
+  }
+
+  return parsed.data;
+}
 
 export async function getBookings(guestId: number): Promise<BookingPreviev[]> {
   // const { data, error, count } = await supabase

@@ -60,6 +60,10 @@ export const fullBookingPreviewSchema = z.object({
   hasBreakfast: z.boolean(),
   observations: z.string().nullable(),
   status: z.string(),
+  cabins: z.object({
+    name: z.string(),
+    maxCapacity: z.number(),
+  }),
 });
 
 export const fullBookingPreviewSchemaArray = z.array(fullBookingPreviewSchema);

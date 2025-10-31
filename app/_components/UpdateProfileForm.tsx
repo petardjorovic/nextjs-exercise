@@ -68,7 +68,7 @@ function UpdateProfileForm({ guest, children }: UpdateProfileFormProps) {
 
       <div className="flex justify-end items-center gap-6">
         {/* Napravio sam ovu komponentu za button zato sto sam komponenta koja je unutar forme moze da koristi useFormStatus hook*/}
-        <SubmitButton />
+        <SubmitButton pendingLabel="Updating...">Update profile</SubmitButton>
       </div>
     </form>
   );
