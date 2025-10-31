@@ -1,16 +1,15 @@
 import SubmitButton from "@/app/_components/SubmitButton";
 import { updateReservationAction } from "@/app/_lib/actions";
-import { getBooking } from "@/app/_lib/data-service";
+import { getBooking, getCabin } from "@/app/_lib/data-service";
 
 async function Page(
   props: PageProps<"/account/reservations/edit/[bookingId]">
 ) {
   const { bookingId } = await props.params;
-  const {
-    cabins: { maxCapacity },
-    numGuests,
-    observations,
-  } = await getBooking(Number(bookingId));
+  const { cabinId, numGuests, observations } = await getBooking(
+    Number(bookingId)
+  );
+  const { maxCapacity } = await getCabin(cabinId);
 
   return (
     <div>
@@ -32,7 +31,7 @@ async function Page(
             className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
             required
           >
-            <option value="" key="">
+            <option value="" key="" disabled>
               Select number of guests...
             </option>
             {Array.from({ length: maxCapacity }, (_, i) => i + 1).map((x) => (
