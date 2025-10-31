@@ -1,6 +1,7 @@
 "use client";
 
 import { updateGuestAction } from "../_lib/actions";
+import SubmitButton from "./SubmitButton";
 
 type UpdateProfileFormProps = {
   guest: {
@@ -66,9 +67,8 @@ function UpdateProfileForm({ guest, children }: UpdateProfileFormProps) {
       </div>
 
       <div className="flex justify-end items-center gap-6">
-        <button className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300">
-          Update profile
-        </button>
+        {/* Napravio sam ovu komponentu za button zato sto sam komponenta koja je unutar forme moze da koristi useFormStatus hook*/}
+        <SubmitButton />
       </div>
     </form>
   );
