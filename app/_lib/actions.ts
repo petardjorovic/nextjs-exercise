@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import { supabase } from "./supabaseClient";
+import { getBookings } from "./data-service";
 
 export async function signInGoogleAction() {
   await signIn("google", {
@@ -25,10 +26,11 @@ export async function signOutAction() {
 export async function updateGuestAction(formData: FormData) {
   //* check is user logged in
   const session = await auth();
-  if (!session) throw new Error("You must be logged in");
+  if (!session || !session.user.guestId)
+    throw new Error("You must be logged in");
 
+  //* validate formData
   const natinalityFlag = formData.get("nationality")?.toString().split("%");
-
   const nationality = natinalityFlag ? natinalityFlag[0] : null;
   const countryFlag = natinalityFlag ? natinalityFlag[1] : null;
 
@@ -45,8 +47,6 @@ export async function updateGuestAction(formData: FormData) {
     nationalID,
   };
 
-  if (!session.user.guestId) throw new Error("You must be logged in");
-
   const { error } = await supabase
     .from("guests")
     .update(updatedFields)
@@ -58,4 +58,32 @@ export async function updateGuestAction(formData: FormData) {
 
   //* resetuj cache na ovoj ruti
   revalidatePath("/account/profile");
+}
+
+export async function deleteReservationAction(bookingId: number) {
+  //* check is user logged in
+  const session = await auth();
+  if (!session || !session.user.guestId)
+    throw new Error("You must be logged in");
+
+  //* check weather is that guest's booking
+  const guestBookings = await getBookings(session.user.guestId);
+  const isExist = guestBookings
+    .map((booking) => booking.id)
+    .includes(bookingId);
+
+  if (!isExist)
+    throw new Error("You are not allowed to delete this reservation");
+
+  const { error } = await supabase
+    .from("bookings")
+    .delete()
+    .eq("id", bookingId);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Booking could not be deleted");
+  }
+
+  revalidatePath("/account/reservations");
 }
