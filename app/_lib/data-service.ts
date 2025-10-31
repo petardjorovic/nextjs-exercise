@@ -249,10 +249,10 @@ export async function createGuest(newGuest: {
 //   return data;
 // }
 
-// /////////////
-// // UPDATE
+/////////////
+// UPDATE
 
-// // The updatedFields is an object which should ONLY contain the updated data
+// The updatedFields is an object which should ONLY contain the updated data
 // export async function updateGuest(id, updatedFields) {
 //   const { data, error } = await supabase
 //     .from("guests")
